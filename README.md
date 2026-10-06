@@ -1,8 +1,8 @@
-# TenderPack
+# BidPack
 
 > **Documents checked. Ordered. Ready.**
 
-TenderPack is a frontend-only enterprise web application built for the **AI DevFest 2026 Tender Document Package Builder** problem. It empowers procurement teams and bidders to validate, match, check expiry dates, detect duplicate documents, and compile an official, correctly ordered tender submission PDF package completely locally in the browser with zero server dependencies.
+BidPack is a frontend-only enterprise web application built for the **AI DevFest 2026 Tender Document Package Builder** problem. It empowers procurement teams and bidders to validate, match, check expiry dates, detect duplicate documents, and compile an official, correctly ordered tender submission PDF package completely locally in the browser with zero server dependencies.
 
 ---
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Language } from '../types/tender';
 import { t } from '../i18n/translations';
-import { FileCheck, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 interface HeaderProps {
   lang: Language;
@@ -19,11 +19,11 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="app-header">
       <div className="header-brand">
-        <h1>
-          <FileCheck size={28} strokeWidth={2.2} />
-          {t(lang, 'appTitle', 'appTitle')}
-        </h1>
-        <p className="header-tagline">{t(lang, 'tagline', 'tagline')}</p>
+        <img
+          src="/assets/bidpack-logo.png"
+          alt="BidPack logo"
+          className="header-logo"
+        />
       </div>
 
       <div className="header-actions">

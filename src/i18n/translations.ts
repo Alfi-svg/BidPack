@@ -2,7 +2,7 @@ import { Language } from '../types/tender';
 
 export const translations = {
   en: {
-    appTitle: 'TenderPack',
+    appTitle: 'BidPack',
     tagline: 'Documents checked. Ordered. Ready.',
     workflow: {
       step1: '1. Load Tender',
@@ -97,7 +97,7 @@ export const translations = {
     },
   },
   bn: {
-    appTitle: 'TenderPack',
+    appTitle: 'BidPack',
     tagline: 'নথিপত্র যাচাইকৃত। ক্রমানুসারে সাজানো। প্রস্তুত।',
     workflow: {
       step1: '১. টেন্ডার লোড করুন',
