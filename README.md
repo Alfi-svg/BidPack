@@ -58,7 +58,12 @@ The compiled static assets are located in the `dist/` directory, optimized for z
 
 ## Bonus Features
 
-None
+- **Auto-Match Document Suggestion Engine**: Intelligent filename tokenization, normalization, and semantic keyword matching suggesting likely document matches with confidence scores. Suggestions remain strictly optional suggestions that never overwrite existing manual assignments, never cross-assign duplicate files, and enforce 1:1 uniqueness.
+- **Index Page (Table of Contents)**: Inserts an official Index page on Page 2 immediately following the English cover page, featuring dot leaders and dynamically calculated final package starting page numbers, skipping unattached optional documents.
+- **Safe PDF Handling**: Gracefully handles corrupted, malformed, or password-protected PDFs without crashing, marking the document as "Processing failed" with actionable bilingual user guidance.
+- **CSV Checklist Export**: Generates and downloads a standardized `<tender_id>_Checklist.csv` capturing the live status of all tender requirements, assigned filenames, page counts, and expiry dates with strict RFC 4180 character escaping.
+- **Project Configuration Save & Reopen**: Allows users to save and reopen their tender workspace metadata and matching configuration using browser `localStorage` without storing bulky binary files.
+- **Guided Office Workflow & Issue Jump Navigation**: Interactive 4-step visual workflow with instruction prompts, context-aware smart empty states, and one-click smooth scrolling directly to blocking issues.
 
 ---
 

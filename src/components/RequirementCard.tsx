@@ -7,6 +7,7 @@ import {
 } from '../types/tender';
 import { validateRequirement } from '../lib/validation';
 import { isHashAlreadyMatched } from '../lib/duplicate';
+import { MatchSuggestion } from '../lib/automatch';
 import { t } from '../i18n/translations';
 import { formatFileSize } from './UploadedFileList';
 import {
@@ -17,6 +18,8 @@ import {
   CheckCircle2,
   Calendar,
   X,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 
 interface RequirementCardProps {
@@ -25,9 +28,12 @@ interface RequirementCardProps {
   uploadedFiles: UploadedDoc[];
   matches: Record<string, RequirementMatch>;
   submissionDeadline: string;
+  suggestion?: MatchSuggestion | null;
   lang: Language;
   onMatchChange: (requirementId: string, fileId: string | null) => void;
   onExpiryChange: (requirementId: string, expiryDate: string) => void;
+  onAcceptSuggestion?: (requirementId: string, fileId: string) => void;
+  onDismissSuggestion?: (requirementId: string) => void;
 }
 
 export const RequirementCard: React.FC<RequirementCardProps> = ({
@@ -36,9 +42,12 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
   uploadedFiles,
   matches,
   submissionDeadline,
+  suggestion,
   lang,
   onMatchChange,
   onExpiryChange,
+  onAcceptSuggestion,
+  onDismissSuggestion,
 }) => {
   const currentMatch = matches[requirement.id];
   const matchedDoc = currentMatch?.fileId
@@ -114,7 +123,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
   };
 
   return (
-    <div className={`req-card status-${validation.status}`}>
+    <div id={`req-card-${requirement.id}`} className={`req-card status-${validation.status}`}>
       <div className="req-card-top">
         <div className="req-title-wrap">
           <div className="req-order-pill">#{requirement.order}</div>
@@ -129,6 +138,42 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
 
         <div>{renderStatusBadge()}</div>
       </div>
+
+      {/* Auto-Match Suggestion Banner */}
+      {!matchedDoc && suggestion && (
+        <div className="suggestion-banner">
+          <div className="suggestion-info">
+            <Sparkles size={14} className="sparkle-icon" />
+            <span className="suggestion-text">
+              {t(lang, 'matching', 'suggestedBadge', { name: suggestion.fileName })}
+            </span>
+            <span className="confidence-pill">
+              {Math.round(suggestion.confidence * 100)}%
+            </span>
+          </div>
+
+          <div className="suggestion-actions">
+            <button
+              type="button"
+              className="btn-suggestion-accept"
+              onClick={() => onAcceptSuggestion?.(requirement.id, suggestion.fileId)}
+              title={t(lang, 'matching', 'acceptSuggestion')}
+            >
+              <Check size={12} />
+              <span>{t(lang, 'matching', 'acceptSuggestion')}</span>
+            </button>
+            <button
+              type="button"
+              className="btn-suggestion-dismiss"
+              onClick={() => onDismissSuggestion?.(requirement.id)}
+              title={t(lang, 'matching', 'dismissSuggestion')}
+            >
+              <X size={12} />
+              <span>{t(lang, 'matching', 'dismissSuggestion')}</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Document Selector */}
       <div className="req-match-control">
@@ -151,13 +196,13 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
               uploadedFiles
             );
 
-            const isCorrupted = file.status === 'corrupted';
+            const isCorrupted = file.status === 'corrupted' || file.status === 'error';
             const isDisabled =
               isCorrupted || (isAssignedElsewhere && file.id !== matchedDoc?.id) || isDuplicateOfMatched;
 
             let extraLabel = '';
             if (isCorrupted) {
-              extraLabel = ` [${t(lang, 'upload', 'corrupted')}]`;
+              extraLabel = ` [${t(lang, 'upload', 'processingFailed')}]`;
             } else if (isAssignedElsewhere) {
               extraLabel = ` ${t(lang, 'matching', 'alreadyAssigned', { order: assignedOrder || 0 })}`;
             } else if (isDuplicateOfMatched) {

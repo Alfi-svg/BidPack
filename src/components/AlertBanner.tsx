@@ -1,7 +1,7 @@
 import React from 'react';
-import { AlertCircle, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, AlertTriangle, Info, X } from 'lucide-react';
 
-export type AlertType = 'error' | 'warning' | 'success';
+export type AlertType = 'error' | 'warning' | 'success' | 'info';
 
 interface AlertBannerProps {
   type: AlertType;
@@ -18,6 +18,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({ type, message, onDismi
         {type === 'error' && <AlertCircle size={16} style={{ flexShrink: 0 }} />}
         {type === 'warning' && <AlertTriangle size={16} style={{ flexShrink: 0 }} />}
         {type === 'success' && <CheckCircle size={16} style={{ flexShrink: 0 }} />}
+        {type === 'info' && <Info size={16} style={{ flexShrink: 0 }} />}
         <span>{message}</span>
       </div>
 

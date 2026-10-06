@@ -15,10 +15,13 @@ import { UploadedFileList } from './components/UploadedFileList';
 import { RequirementCard } from './components/RequirementCard';
 import { ReadinessSummary } from './components/ReadinessSummary';
 import { AlertBanner, AlertType } from './components/AlertBanner';
-import { parseRequirementsJson, calculatePackageReadiness } from './lib/validation';
+import { parseRequirementsJson, calculatePackageReadiness, validateRequirement } from './lib/validation';
 import { calculateFileHash, identifyDuplicates } from './lib/duplicate';
 import { countPdfPages, generateTenderPackage, downloadPdfFile } from './lib/pdf';
-import { Files } from 'lucide-react';
+import { generateMatchSuggestions, MatchSuggestion } from './lib/automatch';
+import { exportChecklistCsv } from './lib/csv';
+import { saveProjectState, loadSavedProjectState } from './lib/storage';
+import { Files, Sparkles, Info, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const MAX_FILES = 30;
 const MAX_TOTAL_BYTES = 50 * 1024 * 1024; // 50 MB
@@ -29,6 +32,10 @@ export const App: React.FC = () => {
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedDoc[]>([]);
   const [matches, setMatches] = useState<Record<string, RequirementMatch>>({});
+  const [suggestions, setSuggestions] = useState<Record<string, MatchSuggestion>>({});
+  const [hasSavedProject, setHasSavedProject] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && Boolean(localStorage.getItem('bidpack_saved_project_v1'));
+  });
   const [isGenerating, setIsGenerating] = useState(false);
   const [alert, setAlert] = useState<{ type: AlertType; message: string } | null>(null);
 
@@ -211,11 +218,21 @@ export const App: React.FC = () => {
       }
       return updated;
     });
+
+    // 3. Clear suggestions for this file
+    setSuggestions((prev) => {
+      const updated = { ...prev };
+      for (const [rId, s] of Object.entries(updated)) {
+        if (s.fileId === fileId) delete updated[rId];
+      }
+      return updated;
+    });
   };
 
   // Clear all uploaded documents
   const handleClearAllFiles = () => {
     setUploadedFiles([]);
+    setSuggestions({});
     setMatches((prev) => {
       const updated = { ...prev };
       for (const reqId of Object.keys(updated)) {
@@ -253,6 +270,18 @@ export const App: React.FC = () => {
 
       return updated;
     });
+
+    // Dismiss suggestion for this requirement if matched or cleared
+    setSuggestions((prev) => {
+      const updated = { ...prev };
+      delete updated[requirementId];
+      if (fileId) {
+        for (const [rId, s] of Object.entries(updated)) {
+          if (s.fileId === fileId) delete updated[rId];
+        }
+      }
+      return updated;
+    });
   };
 
   // Change expiry date for a requirement
@@ -264,6 +293,132 @@ export const App: React.FC = () => {
         expiryDate,
       },
     }));
+  };
+
+  // Auto-Match Suggestion Actions
+  const handleSuggestMatches = () => {
+    if (!tender || uploadedFiles.length === 0) return;
+    const newSuggestions = generateMatchSuggestions(requirements, uploadedFiles, matches);
+    const count = Object.keys(newSuggestions).length;
+    setSuggestions(newSuggestions);
+
+    if (count === 0) {
+      setAlert({
+        type: 'info',
+        message: t(lang, 'matching', 'noSuggestionsFound'),
+      });
+    } else {
+      setAlert({
+        type: 'success',
+        message: t(lang, 'matching', 'suggestionsFound', { count }),
+      });
+    }
+  };
+
+  const handleAcceptSuggestion = (reqId: string, fileId: string) => {
+    handleMatchChange(reqId, fileId);
+  };
+
+  const handleDismissSuggestion = (reqId: string) => {
+    setSuggestions((prev) => {
+      const updated = { ...prev };
+      delete updated[reqId];
+      return updated;
+    });
+  };
+
+  const handleApplyAllSuggestions = () => {
+    setMatches((prev) => {
+      const updated = { ...prev };
+      for (const [rId, sug] of Object.entries(suggestions)) {
+        if (!updated[rId]?.fileId) {
+          updated[rId] = {
+            requirementId: rId,
+            fileId: sug.fileId,
+            expiryDate: updated[rId]?.expiryDate || '',
+          };
+        }
+      }
+      return updated;
+    });
+    setSuggestions({});
+  };
+
+  const handleDismissAllSuggestions = () => {
+    setSuggestions({});
+  };
+
+  // CSV Checklist Export Action
+  const handleExportChecklist = () => {
+    if (!tender) return;
+    try {
+      const filename = exportChecklistCsv(tender, requirements, matches, uploadedFiles, lang);
+      setAlert({
+        type: 'success',
+        message: t(lang, 'readiness', 'checklistExported', { filename }),
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown export error';
+      setAlert({
+        type: 'error',
+        message: `Failed to export checklist: ${msg}`,
+      });
+    }
+  };
+
+  // Save Project to localStorage Action
+  const handleSaveProject = () => {
+    if (!tender) return;
+    const ok = saveProjectState(tender, requirements, matches, uploadedFiles);
+    if (ok) {
+      setHasSavedProject(true);
+      setAlert({
+        type: 'success',
+        message: t(lang, 'readiness', 'projectSaved'),
+      });
+    }
+  };
+
+  // Reopen Project from localStorage Action
+  const handleReopenProject = () => {
+    const saved = loadSavedProjectState();
+    if (!saved) {
+      setAlert({
+        type: 'warning',
+        message: t(lang, 'readiness', 'noSavedProject'),
+      });
+      return;
+    }
+
+    setTender(saved.tender);
+    setRequirements(saved.requirements);
+
+    const newMatches: Record<string, RequirementMatch> = {};
+    for (const req of saved.requirements) {
+      const savedM = saved.savedMatches[req.id];
+      let matchedFileId: string | null = null;
+      if (savedM?.fileName) {
+        const found = uploadedFiles.find(
+          (f) => f.name === savedM.fileName && f.status === 'ready'
+        );
+        if (found) {
+          matchedFileId = found.id;
+        }
+      }
+
+      newMatches[req.id] = {
+        requirementId: req.id,
+        fileId: matchedFileId,
+        expiryDate: savedM?.expiryDate || '',
+      };
+    }
+
+    setMatches(newMatches);
+    setSuggestions({});
+    setAlert({
+      type: 'success',
+      message: t(lang, 'readiness', 'projectReopened'),
+    });
   };
 
   // Calculate Package Readiness in real-time
@@ -279,6 +434,21 @@ export const App: React.FC = () => {
       };
     }
     return calculatePackageReadiness(requirements, matches, tender.submission_deadline);
+  }, [tender, requirements, matches]);
+
+  const optionalCount = useMemo(() => {
+    return requirements.filter((r) => !r.mandatory).length;
+  }, [requirements]);
+
+  const firstBlockingReqId = useMemo(() => {
+    if (!tender || requirements.length === 0) return null;
+    for (const req of requirements) {
+      const val = validateRequirement(req, matches[req.id], tender.submission_deadline);
+      if (val.isBlocking) {
+        return req.id;
+      }
+    }
+    return null;
   }, [tender, requirements, matches]);
 
   // Generate Tender Package
@@ -322,6 +492,7 @@ export const App: React.FC = () => {
     setRequirements([]);
     setUploadedFiles([]);
     setMatches({});
+    setSuggestions({});
     setAlert(null);
   };
 
@@ -340,6 +511,34 @@ export const App: React.FC = () => {
         hasFiles={uploadedFiles.length > 0}
         isReady={readiness.isReady}
       />
+
+      {/* Smart Status Guidance Banner */}
+      <div style={{ marginBottom: '1.25rem' }}>
+        {!tender ? (
+          <div className="smart-status-banner banner-prompt">
+            <Info size={16} />
+            <span>{t(lang, 'readiness', 'emptyNoTender')}</span>
+          </div>
+        ) : uploadedFiles.length === 0 ? (
+          <div className="smart-status-banner banner-prompt">
+            <Info size={16} />
+            <span>{t(lang, 'readiness', 'emptyNoFiles')}</span>
+          </div>
+        ) : !readiness.isReady ? (
+          <div className="smart-status-banner banner-warning">
+            <AlertCircle size={16} />
+            <span>{t(lang, 'readiness', 'emptyUnresolved')}</span>
+          </div>
+        ) : (
+          <div className="smart-status-banner banner-success">
+            <CheckCircle2 size={16} />
+            <span>
+              <strong>{t(lang, 'readiness', 'packageReadyTitle')}:</strong>{' '}
+              {t(lang, 'readiness', 'packageReadyDesc')}
+            </span>
+          </div>
+        )}
+      </div>
 
       {alert && (
         <AlertBanner
@@ -360,8 +559,14 @@ export const App: React.FC = () => {
       {tender && (
         <ReadinessSummary
           readiness={readiness}
+          optionalCount={optionalCount}
+          firstBlockingReqId={firstBlockingReqId}
           lang={lang}
           onGeneratePackage={handleGeneratePackage}
+          onExportChecklist={handleExportChecklist}
+          onSaveProject={handleSaveProject}
+          onReopenProject={handleReopenProject}
+          hasSavedProject={hasSavedProject}
           isGenerating={isGenerating}
         />
       )}
@@ -377,7 +582,45 @@ export const App: React.FC = () => {
                   {t(lang, 'matching', 'subtitle')}
                 </p>
               </div>
+
+              {tender && uploadedFiles.length > 0 && (
+                <button
+                  type="button"
+                  className="btn-secondary-sm"
+                  onClick={handleSuggestMatches}
+                  title={t(lang, 'matching', 'suggestMatches')}
+                >
+                  <Sparkles size={14} color="var(--primary-navy)" />
+                  <span>{t(lang, 'matching', 'suggestMatches')}</span>
+                </button>
+              )}
             </div>
+
+            {/* Suggestions Notification Bar */}
+            {Object.keys(suggestions).length > 0 && (
+              <div className="global-suggestions-bar">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8125rem', fontWeight: 600 }}>
+                  <Sparkles size={14} color="var(--primary-navy)" />
+                  <span>{t(lang, 'matching', 'suggestionsFound', { count: Object.keys(suggestions).length })}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="btn-suggestion-accept"
+                    onClick={handleApplyAllSuggestions}
+                  >
+                    {t(lang, 'matching', 'applyAllSuggestions')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-suggestion-dismiss"
+                    onClick={handleDismissAllSuggestions}
+                  >
+                    {t(lang, 'matching', 'dismissAllSuggestions')}
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="card-body">
               {!tender || requirements.length === 0 ? (
@@ -394,9 +637,12 @@ export const App: React.FC = () => {
                       uploadedFiles={uploadedFiles}
                       matches={matches}
                       submissionDeadline={tender.submission_deadline}
+                      suggestion={suggestions[req.id]}
                       lang={lang}
                       onMatchChange={handleMatchChange}
                       onExpiryChange={handleExpiryChange}
+                      onAcceptSuggestion={handleAcceptSuggestion}
+                      onDismissSuggestion={handleDismissSuggestion}
                     />
                   ))}
                 </div>

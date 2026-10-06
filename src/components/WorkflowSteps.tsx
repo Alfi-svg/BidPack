@@ -20,24 +20,28 @@ export const WorkflowSteps: React.FC<WorkflowStepsProps> = ({
     {
       id: 1,
       label: t(lang, 'workflow', 'step1'),
+      instruction: t(lang, 'workflow', 'step1Desc'),
       isCompleted: hasTender,
       isActive: !hasTender,
     },
     {
       id: 2,
       label: t(lang, 'workflow', 'step2'),
+      instruction: t(lang, 'workflow', 'step2Desc'),
       isCompleted: hasFiles,
       isActive: hasTender && !hasFiles,
     },
     {
       id: 3,
       label: t(lang, 'workflow', 'step3'),
+      instruction: t(lang, 'workflow', 'step3Desc'),
       isCompleted: isReady,
       isActive: hasTender && hasFiles && !isReady,
     },
     {
       id: 4,
       label: t(lang, 'workflow', 'step4'),
+      instruction: t(lang, 'workflow', 'step4Desc'),
       isCompleted: false,
       isActive: isReady,
     },
@@ -58,7 +62,10 @@ export const WorkflowSteps: React.FC<WorkflowStepsProps> = ({
             <div className="step-num">
               {step.isCompleted ? <Check size={13} strokeWidth={3} /> : step.id}
             </div>
-            <span>{step.label}</span>
+            <div className="step-text-wrap">
+              <span className="step-label">{step.label}</span>
+              <span className="step-instruction">{step.instruction}</span>
+            </div>
           </div>
         );
       })}

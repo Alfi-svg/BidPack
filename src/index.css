@@ -815,6 +815,12 @@ body {
   color: #166534;
 }
 
+.alert-banner.info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
 /* ==================================================
    TWO-COLUMN WORKFLOW LAYOUT
    Desktop: Left = Requirements, Right = Uploaded Documents
@@ -865,3 +871,192 @@ body {
     gap: 0.5rem;
   }
 }
+
+/* ==================================================
+   BONUS FEATURES & WORKFLOW UX ENHANCEMENTS
+   ================================================== */
+.step-text-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.step-label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+.step-instruction {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  font-weight: 400;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.smart-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+}
+
+.smart-status-banner.banner-prompt {
+  background: rgba(241, 245, 249, 0.92);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.smart-status-banner.banner-warning {
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-color);
+}
+
+.smart-status-banner.banner-success {
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success-color);
+}
+
+.global-suggestions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 1.35rem;
+  background: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.suggestion-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f0fdf4;
+  border: 1px dashed #86efac;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.suggestion-info {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #166534;
+  font-weight: 500;
+}
+
+.confidence-pill {
+  font-size: 0.6875rem;
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  border: 1px solid #bbf7d0;
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.btn-suggestion-accept {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-suggestion-accept:hover {
+  background: #166534;
+}
+
+.btn-suggestion-dismiss {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.55rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-suggestion-dismiss:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.blocking-alert-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--blocking-bg);
+  border: 1px solid var(--blocking-border);
+  color: var(--blocking-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.blocking-alert-banner:hover {
+  background: #fee2e2;
+}
+
+.jump-hint {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.readiness-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.secondary-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@keyframes highlightPulse {
+  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0.2); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+.highlight-pulse {
+  animation: highlightPulse 1.5s ease-in-out;
+  border-color: var(--blocking-color) !important;
+}
+

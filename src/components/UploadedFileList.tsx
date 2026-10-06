@@ -94,9 +94,10 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
                       <span
                         className="badge badge-missing"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}
+                        title={file.errorMessage}
                       >
                         <AlertCircle size={11} />
-                        {t(lang, 'upload', 'corrupted')}
+                        {t(lang, 'upload', 'processingFailed')}
                       </span>
                     )}
 
@@ -113,6 +114,12 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
                       </span>
                     )}
                   </div>
+
+                  {isCorrupted && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--blocking-color)', marginTop: 4, lineHeight: 1.35 }}>
+                      {file.errorMessage || t(lang, 'errors', 'pdfProcessingError')}
+                    </div>
+                  )}
                 </div>
               </div>
 

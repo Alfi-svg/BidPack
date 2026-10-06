@@ -15,16 +15,21 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Counts the number of pages in a PDF file using pdfjs-dist in the browser.
- * Handles invalid or corrupted PDFs gracefully.
+ * Counts the number of pages in a PDF file using pdfjs-dist and pdf-lib in the browser.
+ * Handles invalid, password-protected, or corrupted PDFs gracefully.
  */
 export async function countPdfPages(file: File): Promise<number> {
   const arrayBuffer = await file.arrayBuffer();
-  const loadingTask = pdfjsLib.getDocument({
-    data: new Uint8Array(arrayBuffer),
-  });
 
+  // Test with pdfjs-dist
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(arrayBuffer.slice(0)),
+  });
   const pdfDocument = await loadingTask.promise;
+
+  // Test with pdf-lib to ensure it is unencrypted and readable for merging
+  await PDFDocument.load(arrayBuffer.slice(0), { ignoreEncryption: false });
+
   return pdfDocument.numPages;
 }
 
@@ -210,18 +215,141 @@ export async function generateTenderPackage(
   }
 
   // ==========================================
-  // DOCUMENT APPENDING WITH FOOTER SAFETY
+  // PAGE 2 — INDEX PAGE (TABLE OF CONTENTS)
   // ==========================================
+  // Pre-load matched source documents to determine accurate page counts
+  interface PreparedDoc {
+    req: Requirement;
+    doc: UploadedDoc;
+    sourceDoc: PDFDocument;
+    pageCount: number;
+    startPage: number;
+  }
+
+  const preparedDocs: PreparedDoc[] = [];
   for (const req of matchedRequirements) {
     const match = matches[req.id];
     if (!match?.fileId) continue;
-
     const doc = fileMap.get(match.fileId);
     if (!doc) continue;
 
     const fileBytes = await doc.file.arrayBuffer();
     const sourceDoc = await PDFDocument.load(fileBytes);
-    const sourcePages = sourceDoc.getPages();
+    const pageCount = sourceDoc.getPageCount();
+
+    preparedDocs.push({
+      req,
+      doc,
+      sourceDoc,
+      pageCount,
+      startPage: 0, // Will be computed once total index pages are known
+    });
+  }
+
+  const coverPagesCount = packageDoc.getPageCount();
+  const maxItemsPerIndexPage = 25;
+  const indexPagesCount = Math.max(1, Math.ceil(preparedDocs.length / maxItemsPerIndexPage));
+
+  // Compute final package starting page for each included document
+  let runningStartPage = coverPagesCount + indexPagesCount + 1;
+  for (const item of preparedDocs) {
+    item.startPage = runningStartPage;
+    runningStartPage += item.pageCount;
+  }
+
+  // Draw Index Page(s)
+  let currentIndexPage = packageDoc.addPage([A4_WIDTH, A4_HEIGHT]);
+  let indexCursorY = 780;
+
+  currentIndexPage.drawText('INDEX', {
+    x: MARGIN_X,
+    y: indexCursorY,
+    size: 22,
+    font: fontBold,
+    color: rgb(0.06, 0.1, 0.18),
+  });
+
+  indexCursorY -= 16;
+
+  // Accent divider line
+  currentIndexPage.drawLine({
+    start: { x: MARGIN_X, y: indexCursorY },
+    end: { x: A4_WIDTH - MARGIN_X, y: indexCursorY },
+    thickness: 1.2,
+    color: rgb(0.75, 0.82, 0.9),
+  });
+
+  indexCursorY -= 20;
+
+  currentIndexPage.drawText(`${tender.tender_id} — Table of Contents & Page References`, {
+    x: MARGIN_X,
+    y: indexCursorY,
+    size: 9.5,
+    font: fontRegular,
+    color: rgb(0.35, 0.42, 0.52),
+  });
+
+  indexCursorY -= 26;
+
+  for (const item of preparedDocs) {
+    if (indexCursorY < FOOTER_RESERVED_HEIGHT + 35) {
+      currentIndexPage = packageDoc.addPage([A4_WIDTH, A4_HEIGHT]);
+      indexCursorY = 780;
+    }
+
+    const titleText = `${item.req.order}. ${item.req.title_en}`;
+    const pageNumText = `${item.startPage}`;
+
+    const titleWidth = fontBold.widthOfTextAtSize(titleText, 10);
+    const pageNumWidth = fontBold.widthOfTextAtSize(pageNumText, 10);
+
+    const leftX = MARGIN_X;
+    const rightX = A4_WIDTH - MARGIN_X;
+
+    // Draw document title
+    currentIndexPage.drawText(titleText, {
+      x: leftX,
+      y: indexCursorY,
+      size: 10,
+      font: fontBold,
+      color: rgb(0.12, 0.18, 0.26),
+    });
+
+    // Draw starting page number (right-aligned)
+    currentIndexPage.drawText(pageNumText, {
+      x: rightX - pageNumWidth,
+      y: indexCursorY,
+      size: 10,
+      font: fontBold,
+      color: rgb(0.12, 0.18, 0.26),
+    });
+
+    // Draw dot leaders between title and page number
+    const dotsStartX = leftX + titleWidth + 8;
+    const dotsEndX = rightX - pageNumWidth - 8;
+    if (dotsEndX > dotsStartX) {
+      const dotUnit = '. ';
+      const dotUnitWidth = fontRegular.widthOfTextAtSize(dotUnit, 9);
+      const numDots = Math.floor((dotsEndX - dotsStartX) / dotUnitWidth);
+      if (numDots > 0) {
+        currentIndexPage.drawText(dotUnit.repeat(numDots), {
+          x: dotsStartX,
+          y: indexCursorY,
+          size: 9,
+          font: fontRegular,
+          color: rgb(0.65, 0.72, 0.8),
+        });
+      }
+    }
+
+    indexCursorY -= 22;
+  }
+
+  // ==========================================
+  // DOCUMENT APPENDING WITH FOOTER SAFETY (PAGE 3+)
+  // ==========================================
+  for (const item of preparedDocs) {
+    const sourcePages = item.sourceDoc.getPages();
 
     // Embed all pages from this source document preserving original order
     const embeddedPages = await packageDoc.embedPages(sourcePages);
