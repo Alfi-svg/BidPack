@@ -1,6 +1,14 @@
 import { UploadedDoc } from '../types/tender';
 
 /**
+ * TenderPack Duplicate Detection Engine
+ * 
+ * Uses Web Crypto API SHA-256 digest on raw file bytes to ensure
+ * exact content-based duplicate identification, regardless of filenames.
+ * Enforces rule: Duplicate files cannot be assigned to different requirements.
+ */
+
+/**
  * Calculates SHA-256 hash of a file using browser Web Crypto API.
  */
 export async function calculateFileHash(file: File): Promise<string> {

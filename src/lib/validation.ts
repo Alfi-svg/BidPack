@@ -7,6 +7,17 @@ import {
 } from '../types/tender';
 
 /**
+ * TenderPack Validation Engine
+ * 
+ * Implements the Exact 5-Status Engine:
+ * 1. Missing: mandatory === true && no file matched (Blocking: YES)
+ * 2. Expiry date needed: has_expiry === true && file matched && expiry date missing (Blocking: YES)
+ * 3. Expired: expiry date < submission deadline (Blocking: YES)
+ * 4. Not provided: mandatory === false && no file matched (Blocking: NO)
+ * 5. OK: file matched && (!has_expiry || expiry >= submission deadline) (Blocking: NO)
+ */
+
+/**
  * Normalizes date to YYYY-MM-DD
  */
 export function normalizeDate(dateStr: string): string {

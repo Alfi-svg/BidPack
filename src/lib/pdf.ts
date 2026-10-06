@@ -30,8 +30,16 @@ export async function countPdfPages(file: File): Promise<number> {
 
 /**
  * Production PDF Package Generator using pdf-lib.
- * Generates <tender_id>_Package.pdf with professional Cover Page,
- * strictly ordered documents, and aspect-ratio-safe footers with accurate total page count.
+ * 
+ * Key Architecture:
+ * 1. Page 1 Cover: Professional English cover page with Tender ID, Title, Entity,
+ *    Bidder, Deadline, Generated Date, and ordered list of included documents.
+ * 2. Strict Ordering: Matched source documents sorted strictly by requirement.order.
+ * 3. Footer Safety: For each imported page, creates a new page of identical dimensions,
+ *    reserves a 32pt footer strip at the bottom, and draws the original page scaled
+ *    proportionally to preserve aspect ratio without obscuring any original content.
+ * 4. Two-Pass Exact Page Stamping: Total page count Y is computed from actual final package,
+ *    stamping "<tender_id> | Page X of Y" across all pages (1 through Y).
  */
 export async function generateTenderPackage(
   tender: TenderMetadata,
