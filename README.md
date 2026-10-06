@@ -8,9 +8,9 @@ BidPack is a frontend-only enterprise web application built for the **AI DevFest
 
 ## Participant Information
 
-- **Your name:** [PLACEHOLDER: USER WILL EDIT]
-- **Registration number:** [PLACEHOLDER: USER WILL EDIT]
-- **Live website:** [PLACEHOLDER: USER WILL ADD AFTER VERCEL]
+- **Your name:** ALFI SHAHRIN TALUKDER
+- **Registration number:** 251-15-662
+- **Live website:** https://bid-pack.vercel.app/
 
 ---
 
