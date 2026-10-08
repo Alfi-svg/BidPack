@@ -436,6 +436,10 @@ export const App: React.FC = () => {
     return calculatePackageReadiness(requirements, matches, tender.submission_deadline);
   }, [tender, requirements, matches]);
 
+  const mandatoryCount = useMemo(() => {
+    return requirements.filter((r) => r.mandatory).length;
+  }, [requirements]);
+
   const optionalCount = useMemo(() => {
     return requirements.filter((r) => !r.mandatory).length;
   }, [requirements]);
@@ -559,6 +563,7 @@ export const App: React.FC = () => {
       {tender && (
         <ReadinessSummary
           readiness={readiness}
+          mandatoryCount={mandatoryCount}
           optionalCount={optionalCount}
           firstBlockingReqId={firstBlockingReqId}
           lang={lang}

@@ -31,11 +31,23 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
     }
   };
 
+  const deadlineInfo = tender?.submission_deadline ? (() => {
+    const d = new Date(tender.submission_deadline);
+    if (isNaN(d.getTime())) return null;
+    const now = new Date();
+    const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return {
+      isPast: diffDays < 0,
+      isApproaching: diffDays >= 0 && diffDays <= 7,
+      days: diffDays,
+    };
+  })() : null;
+
   return (
-    <div className="card">
+    <div className="card glass-card">
       <div className="card-header">
         <h2>
-          <FileCode size={18} />
+          <FileCode size={18} className="header-icon-primary" />
           {t(lang, 'tenderInfo', 'title')}
         </h2>
         {tender && (
@@ -66,8 +78,9 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
             onDrop={handleDrop}
           >
             <div className="empty-tender-icon">
-              <FileUp size={36} strokeWidth={1.5} />
+              <FileUp size={40} strokeWidth={1.5} />
             </div>
+            <h3 className="empty-tender-title">{t(lang, 'tenderInfo', 'emptyTitle')}</h3>
             <p className="empty-tender-text">
               {t(lang, 'tenderInfo', 'loadPrompt')}
             </p>
@@ -83,40 +96,65 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
         ) : (
           <div className="tender-meta-grid">
             <div className="meta-field">
-              <span className="meta-label">
-                <Hash size={12} style={{ display: 'inline', marginRight: 4 }} />
+              <div className="meta-label">
+                <span className="icon-pill icon-pill-blue">
+                  <Hash size={13} />
+                </span>
                 {t(lang, 'tenderInfo', 'tenderId')}
-              </span>
-              <span className="meta-val highlight">{tender.tender_id}</span>
+              </div>
+              <div className="meta-val highlight">{tender.tender_id}</div>
             </div>
 
-            <div className="meta-field" style={{ gridColumn: 'span 2' }}>
-              <span className="meta-label">{t(lang, 'tenderInfo', 'tenderTitle')}</span>
-              <span className="meta-val">{tender.title}</span>
+            <div className="meta-field title-field">
+              <div className="meta-label">
+                <span className="icon-pill icon-pill-purple">
+                  <FileCode size={13} />
+                </span>
+                {t(lang, 'tenderInfo', 'tenderTitle')}
+              </div>
+              <div className="meta-val meta-val-title">{tender.title}</div>
             </div>
 
             <div className="meta-field">
-              <span className="meta-label">
-                <Building2 size={12} style={{ display: 'inline', marginRight: 4 }} />
+              <div className="meta-label">
+                <span className="icon-pill icon-pill-indigo">
+                  <Building2 size={13} />
+                </span>
                 {t(lang, 'tenderInfo', 'procuringEntity')}
-              </span>
-              <span className="meta-val">{tender.procuring_entity}</span>
+              </div>
+              <div className="meta-val">{tender.procuring_entity}</div>
             </div>
 
             <div className="meta-field">
-              <span className="meta-label">
-                <User size={12} style={{ display: 'inline', marginRight: 4 }} />
+              <div className="meta-label">
+                <span className="icon-pill icon-pill-teal">
+                  <User size={13} />
+                </span>
                 {t(lang, 'tenderInfo', 'bidder')}
-              </span>
-              <span className="meta-val">{tender.bidder}</span>
+              </div>
+              <div className="meta-val">{tender.bidder}</div>
             </div>
 
             <div className="meta-field">
-              <span className="meta-label">
-                <Calendar size={12} style={{ display: 'inline', marginRight: 4 }} />
+              <div className="meta-label">
+                <span className="icon-pill icon-pill-amber">
+                  <Calendar size={13} />
+                </span>
                 {t(lang, 'tenderInfo', 'deadline')}
-              </span>
-              <span className="meta-val highlight">{tender.submission_deadline}</span>
+              </div>
+              <div className="deadline-val-wrap">
+                <span className="meta-val highlight">{tender.submission_deadline}</span>
+                {deadlineInfo?.isPast && (
+                  <span className="badge badge-expired" style={{ fontSize: '0.6875rem' }}>
+                    {t(lang, 'tenderInfo', 'pastDeadline')}
+                  </span>
+                )}
+                {deadlineInfo?.isApproaching && (
+                  <span className="badge badge-expiry-needed" style={{ fontSize: '0.6875rem' }}>
+                    {t(lang, 'tenderInfo', 'approaching')} ({deadlineInfo.days}d)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}

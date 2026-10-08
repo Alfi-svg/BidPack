@@ -58,6 +58,10 @@ export const UploadArea: React.FC<UploadAreaProps> = ({
         onChange={handleInputChange}
       />
 
+      <div className="upload-helper-desc">
+        {t(lang, 'upload', 'helper')}
+      </div>
+
       <div
         className={`upload-dropzone ${isDragOver ? 'dragover' : ''}`}
         onDragOver={handleDragOver}

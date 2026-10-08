@@ -24,6 +24,12 @@ export const Header: React.FC<HeaderProps> = ({
           alt="BidPack logo"
           className="header-logo"
         />
+        <div className="header-badge-wrap">
+          <span className="header-event-badge">
+            <span className="badge-pulse-dot" />
+            {t(lang, 'header', 'eventBadge')}
+          </span>
+        </div>
       </div>
 
       <div className="header-actions">

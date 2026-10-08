@@ -129,14 +129,24 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
           <div className="req-order-pill">#{requirement.order}</div>
           <span className="req-title">{title}</span>
 
-          {requirement.mandatory ? (
-            <span className="badge badge-mandatory">{t(lang, 'matching', 'mandatory')}</span>
-          ) : (
-            <span className="badge badge-optional">{t(lang, 'matching', 'optional')}</span>
-          )}
+          <div className="req-badges-group">
+            {requirement.mandatory ? (
+              <span className="badge badge-mandatory">{t(lang, 'matching', 'mandatory')}</span>
+            ) : (
+              <span className="badge badge-optional">{t(lang, 'matching', 'optional')}</span>
+            )}
+
+            <span
+              className={`badge ${requirement.has_expiry ? 'badge-expiry-needed' : 'badge-optional'}`}
+              title={t(lang, 'matching', 'colExpiryReq')}
+              style={{ fontSize: '0.6875rem' }}
+            >
+              {t(lang, 'matching', 'colExpiryReq')}: {requirement.has_expiry ? t(lang, 'matching', 'yes') : t(lang, 'matching', 'no')}
+            </span>
+          </div>
         </div>
 
-        <div>{renderStatusBadge()}</div>
+        <div className="req-status-col">{renderStatusBadge()}</div>
       </div>
 
       {/* Auto-Match Suggestion Banner */}

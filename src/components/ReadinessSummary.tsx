@@ -5,6 +5,7 @@ import { Package, ShieldAlert, CheckCircle2, Download, Loader2 } from 'lucide-re
 
 interface ReadinessSummaryProps {
   readiness: PackageReadiness;
+  mandatoryCount: number;
   optionalCount: number;
   firstBlockingReqId: string | null;
   lang: Language;
@@ -18,6 +19,7 @@ interface ReadinessSummaryProps {
 
 export const ReadinessSummary: React.FC<ReadinessSummaryProps> = ({
   readiness,
+  mandatoryCount,
   optionalCount,
   firstBlockingReqId,
   lang,
@@ -42,28 +44,33 @@ export const ReadinessSummary: React.FC<ReadinessSummaryProps> = ({
   };
 
   return (
-    <div className="readiness-card">
+    <div className="readiness-card glass-card">
       <div className="readiness-header">
         <h2 style={{ fontSize: '1.05rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 7 }}>
-          <Package size={19} />
+          <Package size={19} className="header-icon-primary" />
           {t(lang, 'readiness', 'title')}
         </h2>
 
-        {/* 4-Metric Grid */}
+        {/* 5-Metric Compact Grid */}
         <div className="readiness-counters">
           <div className="stat-pill">
             <span className="stat-number">{readiness.totalRequirements}</span>
-            <span className="stat-desc">{t(lang, 'readiness', 'statTotal')}</span>
+            <span className="stat-desc">{t(lang, 'readiness', 'statRequirements')}</span>
           </div>
 
           <div className="stat-pill">
-            <span className="stat-number is-ready">{readiness.readyCount}</span>
-            <span className="stat-desc">{t(lang, 'readiness', 'statReady')}</span>
+            <span className="stat-number" style={{ color: 'var(--primary-navy)' }}>{mandatoryCount}</span>
+            <span className="stat-desc">{t(lang, 'readiness', 'statMandatory')}</span>
           </div>
 
           <div className="stat-pill">
             <span className="stat-number" style={{ color: 'var(--neutral-gray)' }}>{optionalCount}</span>
             <span className="stat-desc">{t(lang, 'readiness', 'statOptional')}</span>
+          </div>
+
+          <div className="stat-pill">
+            <span className="stat-number is-ready">{readiness.readyCount}</span>
+            <span className="stat-desc">{t(lang, 'readiness', 'statReady')}</span>
           </div>
 
           <div className="stat-pill">
