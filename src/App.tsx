@@ -577,8 +577,8 @@ export const App: React.FC = () => {
         />
       )}
 
-      <div className="workflow-workspace-grid three-col-layout">
-        {/* Left Column: Requirements & Matching (Largest width) */}
+      <div className="workflow-workspace-grid">
+        {/* Left Column: Requirements & Matching (Primary Work Area) */}
         <div className="requirements-column">
           <div className="card glass-card">
             <div className="card-header">
@@ -657,9 +657,9 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Middle Column: Document Upload & File Inventory (Medium width) */}
-        <div className="upload-column">
-          <div className="card glass-card">
+        {/* Right Column: Upload Panel + Quick Guide & Tips */}
+        <div className="sidebar-column">
+          <div className="card glass-card upload-panel-card">
             <div className="card-header">
               <h2>
                 <Files size={18} className="header-icon-primary" />
@@ -683,10 +683,11 @@ export const App: React.FC = () => {
               />
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Quick Guide & Tips (Smaller width) */}
-        <QuickGuide lang={lang} />
+          <div className="sidebar-guide-wrap">
+            <QuickGuide lang={lang} />
+          </div>
+        </div>
       </div>
     </div>
   );

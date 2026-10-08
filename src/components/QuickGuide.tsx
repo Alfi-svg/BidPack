@@ -45,7 +45,7 @@ export const QuickGuide: React.FC<QuickGuideProps> = ({ lang }) => {
   ];
 
   return (
-    <div className="quick-guide-column">
+    <div className="quick-guide-container">
       {/* Quick Guide Card */}
       <div className="card glass-card quick-guide-panel">
         <div className="card-header">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Language } from '../types/tender';
 import { t } from '../i18n/translations';
-import { RotateCcw, ShieldCheck, User } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 interface HeaderProps {
   lang: Language;
@@ -18,26 +18,13 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="app-header glass-header">
-      {/* LEFT: Brand, Name & Tagline */}
+      {/* LEFT: Clean Approved Brand Logo */}
       <div className="header-brand">
         <img
           src="/assets/bidpack-logo.png"
-          alt="BidPack logo"
+          alt="BidPack"
           className="header-logo"
         />
-        <div className="brand-text-col">
-          <div className="brand-name">BidPack</div>
-          <div className="brand-tagline">{t(lang, 'tagline')}</div>
-        </div>
-      </div>
-
-      {/* CENTER: Official Portal Pill */}
-      <div className="header-center">
-        <div className="official-portal-pill">
-          <span className="portal-pulse-dot" />
-          <ShieldCheck size={13} className="portal-icon" />
-          <span>{t(lang, 'header', 'officialPortal')}</span>
-        </div>
       </div>
 
       {/* RIGHT: Actions & Language Toggle */}
@@ -69,13 +56,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             বাংলা
           </button>
-        </div>
-
-        {/* Visual Workspace Profile Pill */}
-        <div className="header-profile-pill" title="Workspace: Verified Office Operator">
-          <div className="profile-avatar">
-            <User size={13} />
-          </div>
         </div>
       </div>
     </header>

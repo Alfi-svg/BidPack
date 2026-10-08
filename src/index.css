@@ -6,8 +6,8 @@
 :root {
   /* Surfaces & Ambient Lighting */
   --bg-page: #f5f8fc;
-  --bg-glass-card: rgba(255, 255, 255, 0.74);
-  --bg-glass-card-hover: rgba(255, 255, 255, 0.88);
+  --bg-glass-card: rgba(255, 255, 255, 0.82);
+  --bg-glass-card-hover: rgba(255, 255, 255, 0.92);
   --bg-glass-subtle: rgba(241, 246, 254, 0.65);
   --bg-glass-inset: rgba(255, 255, 255, 0.55);
   
@@ -74,19 +74,29 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Noto Sans Bengali', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-page);
-  background-image: 
-    linear-gradient(145deg, rgba(246, 249, 255, 0.86) 0%, rgba(239, 245, 253, 0.92) 50%, rgba(234, 242, 252, 0.95) 100%),
-    url('/assets/bidpack-background.png');
-  background-position: center center;
-  background-size: cover;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background-color: #f4f7fb;
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: 
+    linear-gradient(145deg, rgba(246, 249, 255, 0.88) 0%, rgba(239, 245, 253, 0.94) 50%, rgba(234, 242, 252, 0.96) 100%),
+    url('/assets/bidpack-background.png');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .app-container {
@@ -104,9 +114,9 @@ body {
   align-items: center;
   margin: 1.25rem 0 1.75rem;
   padding: 0.85rem 1.65rem;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
@@ -117,85 +127,22 @@ body {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  min-width: 0;
 }
 
 .header-logo {
-  height: 40px;
+  height: 44px;
   width: auto;
-  max-width: 240px;
+  max-width: 220px;
   object-fit: contain;
   display: block;
 }
 
 @media (max-width: 640px) {
   .header-logo {
-    height: 34px;
-    max-width: 190px;
+    height: 36px;
+    max-width: 180px;
   }
-}
-
-.brand-text-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-main);
-  line-height: 1.15;
-}
-
-.brand-tagline {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-/* Center Official Portal Pill */
-.header-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.official-portal-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0.95rem;
-  background: rgba(240, 247, 255, 0.78);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(191, 219, 254, 0.75);
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #0369a1;
-  letter-spacing: 0.02em;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 6px rgba(10, 132, 255, 0.06);
-}
-
-.portal-pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--liquid-blue);
-  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
-  animation: liquidPulse 2.5s infinite ease-in-out;
-}
-
-@keyframes liquidPulse {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.portal-icon {
-  color: var(--liquid-blue);
 }
 
 /* Header Right Actions */
@@ -265,9 +212,9 @@ body {
   align-items: center;
   gap: 0.85rem;
   padding: 0.85rem 1.15rem;
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(16px) saturate(135%);
-  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-glass);
@@ -374,8 +321,8 @@ body {
    ============================================================ */
 .glass-card {
   background: var(--bg-glass-card);
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
@@ -769,10 +716,8 @@ body {
   padding: 0.45rem 0.85rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  border: 1px solid var(--border-glass);
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass-subtle);
+  background: rgba(255, 255, 255, 0.82);
   color: var(--text-muted);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -784,9 +729,9 @@ body {
 }
 
 .btn-glass-secondary:hover {
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   color: var(--text-main);
-  border-color: rgba(191, 219, 254, 0.85);
+  border-color: rgba(191, 219, 254, 0.95);
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
@@ -828,8 +773,6 @@ body {
   font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
@@ -884,60 +827,48 @@ body {
 }
 
 /* ============================================================
-   MAIN DASHBOARD THREE-COLUMN LAYOUT
-   Left: Requirements (largest)
-   Middle: Upload Documents (medium)
-   Right: Quick Guide (compact)
+   MAIN DASHBOARD WORKSPACE GRID
+   Left: Requirements & Matching (Primary Work Area - 1.45fr)
+   Right: Sidebar with Upload Documents + Quick Guide & Tips (1fr)
    ============================================================ */
-.workflow-workspace-grid.three-col-layout {
+.workflow-workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, 0.85fr);
-  gap: 1.4rem;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 1.5rem;
   align-items: flex-start;
 }
 
 .requirements-column {
-  order: 1;
+  min-width: 0;
+  width: 100%;
 }
 
-.upload-column {
-  order: 2;
-  position: sticky;
-  top: 1.5rem;
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
-.quick-guide-column {
-  order: 3;
-  position: sticky;
-  top: 1.5rem;
+.sidebar-guide-wrap {
+  width: 100%;
 }
 
-@media (max-width: 1240px) and (min-width: 900px) {
-  .workflow-workspace-grid.three-col-layout {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  }
-  .quick-guide-column {
-    grid-column: span 2;
-    order: 3;
-    position: static;
-  }
+.quick-guide-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
 }
 
-@media (max-width: 899px) {
-  .workflow-workspace-grid.three-col-layout {
+@media (max-width: 1024px) {
+  .workflow-workspace-grid {
     grid-template-columns: 1fr;
   }
-  .upload-column {
-    order: 1;
-    position: static;
-  }
-  .requirements-column {
-    order: 2;
-  }
-  .quick-guide-column {
-    order: 3;
-    position: static;
-  }
+}
+
+@media (max-width: 768px) {
   .workflow-bar {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -967,9 +898,7 @@ body {
 }
 
 .glass-req-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.86);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 1.15rem 1.25rem;
@@ -982,8 +911,8 @@ body {
 }
 
 .glass-req-card:hover {
-  background: var(--bg-glass-card-hover);
-  border-color: rgba(191, 219, 254, 0.9);
+  background: #ffffff;
+  border-color: rgba(191, 219, 254, 0.95);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
