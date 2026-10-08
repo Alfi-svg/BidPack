@@ -84,8 +84,8 @@ export const UploadArea: React.FC<UploadAreaProps> = ({
 
         <button
           type="button"
-          className="btn-primary"
-          style={{ marginTop: '0.4rem' }}
+          className="btn-liquid-primary"
+          style={{ marginTop: '0.45rem' }}
           onClick={(e) => {
             e.stopPropagation();
             inputRef.current?.click();

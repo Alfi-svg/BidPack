@@ -44,12 +44,12 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
 
         <button
           type="button"
-          className="btn-danger-sm"
+          className="btn-glass-danger"
           onClick={onClearAll}
           title={t(lang, 'upload', 'clearAll')}
         >
           <Trash2 size={12} />
-          {t(lang, 'upload', 'clearAll')}
+          <span>{t(lang, 'upload', 'clearAll')}</span>
         </button>
       </div>
 
@@ -61,26 +61,28 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
           return (
             <div
               key={file.id}
-              className={`file-item-card ${file.isDuplicate ? 'is-duplicate' : ''}`}
+              className={`file-item-glass ${file.isDuplicate ? 'is-duplicate' : ''}`}
             >
               <div className="file-info">
-                <FileText size={18} color="#475569" style={{ flexShrink: 0 }} />
+                <div className="pdf-icon-bubble">
+                  <FileText size={16} />
+                </div>
                 <div style={{ minWidth: 0 }}>
                   <div className="file-name" title={file.name}>
                     {file.name}
                   </div>
                   <div className="file-meta">
-                    <span>{formatFileSize(file.size)}</span>
+                    <span className="file-size-text">{formatFileSize(file.size)}</span>
 
                     {isProcessing && (
-                      <span className="file-meta-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span className="file-meta-pill glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                         <Loader2 size={11} className="spin-icon" />
                         {t(lang, 'upload', 'processing')}
                       </span>
                     )}
 
                     {!isProcessing && !isCorrupted && file.pageCount !== null && (
-                      <span className="file-meta-pill">
+                      <span className="file-meta-pill glass-pill">
                         {t(
                           lang,
                           'upload',
@@ -92,7 +94,7 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
 
                     {isCorrupted && (
                       <span
-                        className="badge badge-missing"
+                        className="badge-liquid badge-liquid-missing"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}
                         title={file.errorMessage}
                       >
@@ -103,7 +105,7 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
 
                     {file.isDuplicate && (
                       <span
-                        className="badge badge-duplicate"
+                        className="badge-liquid badge-liquid-duplicate"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}
                         title={file.duplicateOf ? `Duplicate of ${file.duplicateOf}` : undefined}
                       >
@@ -126,13 +128,12 @@ export const UploadedFileList: React.FC<UploadedFileListProps> = ({
               <div className="file-actions">
                 <button
                   type="button"
-                  className="btn-danger-sm"
+                  className="btn-glass-danger btn-icon-only"
                   onClick={() => onRemoveFile(file.id)}
-                  title={t(lang, 'upload', 'remove')}
+                  title={`${t(lang, 'upload', 'remove')} ${file.name}`}
                   aria-label={`${t(lang, 'upload', 'remove')} ${file.name}`}
                 >
-                  <Trash2 size={14} />
-                  <span>{t(lang, 'upload', 'remove')}</span>
+                  <Trash2 size={13} />
                 </button>
               </div>
             </div>

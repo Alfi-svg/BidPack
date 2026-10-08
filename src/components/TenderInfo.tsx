@@ -44,16 +44,23 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
   })() : null;
 
   return (
-    <div className="card glass-card">
+    <div className="card glass-card tender-info-panel">
       <div className="card-header">
-        <h2>
-          <FileCode size={18} className="header-icon-primary" />
-          {t(lang, 'tenderInfo', 'title')}
-        </h2>
+        <div className="header-title-wrap">
+          <h2>
+            <FileCode size={18} className="header-icon-primary" />
+            {t(lang, 'tenderInfo', 'title')}
+          </h2>
+          {!tender && (
+            <p className="card-subtitle">
+              Upload your tender requirements file to get started.
+            </p>
+          )}
+        </div>
         {tender && (
           <button
             type="button"
-            className="btn-secondary-sm"
+            className="btn-glass-secondary"
             onClick={() => fileInputRef.current?.click()}
           >
             <FileUp size={14} />
@@ -73,12 +80,15 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
 
         {!tender ? (
           <div
-            className="empty-tender-box"
+            className="empty-tender-box glass-dropzone"
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
           >
-            <div className="empty-tender-icon">
-              <FileUp size={40} strokeWidth={1.5} />
+            <div className="empty-tender-icon glass-icon-glow">
+              <FileUp size={38} strokeWidth={1.75} />
             </div>
             <h3 className="empty-tender-title">{t(lang, 'tenderInfo', 'emptyTitle')}</h3>
             <p className="empty-tender-text">
@@ -86,10 +96,13 @@ export const TenderInfo: React.FC<TenderInfoProps> = ({ tender, lang, onFileSele
             </p>
             <button
               type="button"
-              className="btn-primary"
-              onClick={() => fileInputRef.current?.click()}
+              className="btn-liquid-primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                fileInputRef.current?.click();
+              }}
             >
-              <FileUp size={16} />
+              <FileUp size={15} />
               {t(lang, 'tenderInfo', 'loadButton')}
             </button>
           </div>

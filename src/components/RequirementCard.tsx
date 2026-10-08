@@ -87,34 +87,34 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
     switch (validation.status) {
       case 'missing':
         return (
-          <span className="badge badge-missing">
+          <span className="badge-liquid badge-liquid-missing">
             <AlertCircle size={12} />
             {t(lang, 'status', 'missing')}
           </span>
         );
       case 'expiry_needed':
         return (
-          <span className="badge badge-expiry-needed">
+          <span className="badge-liquid badge-liquid-expiry">
             <Clock size={12} />
             {t(lang, 'status', 'expiry_needed')}
           </span>
         );
       case 'expired':
         return (
-          <span className="badge badge-expired">
+          <span className="badge-liquid badge-liquid-expired">
             <XCircle size={12} />
             {t(lang, 'status', 'expired')}
           </span>
         );
       case 'not_provided':
         return (
-          <span className="badge badge-not-provided">
+          <span className="badge-liquid badge-liquid-neutral">
             {t(lang, 'status', 'not_provided')}
           </span>
         );
       case 'ok':
         return (
-          <span className="badge badge-ok">
+          <span className="badge-liquid badge-liquid-ok">
             <CheckCircle2 size={12} />
             {t(lang, 'status', 'ok')}
           </span>
@@ -123,21 +123,21 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
   };
 
   return (
-    <div id={`req-card-${requirement.id}`} className={`req-card status-${validation.status}`}>
+    <div id={`req-card-${requirement.id}`} className={`req-card glass-req-card status-${validation.status} ${matchedDoc ? 'is-matched' : ''}`}>
       <div className="req-card-top">
         <div className="req-title-wrap">
           <div className="req-order-pill">#{requirement.order}</div>
-          <span className="req-title">{title}</span>
+          <span className="req-title" title={title}>{title}</span>
 
           <div className="req-badges-group">
             {requirement.mandatory ? (
-              <span className="badge badge-mandatory">{t(lang, 'matching', 'mandatory')}</span>
+              <span className="badge-liquid badge-liquid-mandatory">{t(lang, 'matching', 'mandatory')}</span>
             ) : (
-              <span className="badge badge-optional">{t(lang, 'matching', 'optional')}</span>
+              <span className="badge-liquid badge-liquid-optional">{t(lang, 'matching', 'optional')}</span>
             )}
 
             <span
-              className={`badge ${requirement.has_expiry ? 'badge-expiry-needed' : 'badge-optional'}`}
+              className={`badge-liquid ${requirement.has_expiry ? 'badge-liquid-expiry' : 'badge-liquid-neutral'}`}
               title={t(lang, 'matching', 'colExpiryReq')}
               style={{ fontSize: '0.6875rem' }}
             >
@@ -230,7 +230,7 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
         {matchedDoc && (
           <button
             type="button"
-            className="btn-danger-sm"
+            className="btn-glass-danger"
             onClick={() => onMatchChange(requirement.id, null)}
             title={t(lang, 'matching', 'clearMatch')}
           >
@@ -242,15 +242,15 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
 
       {/* Selected file info card */}
       {matchedDoc && (
-        <div className="matched-doc-display">
-          <div className="matched-doc-name">
-            <FileCheck2 size={16} />
-            <span>{matchedDoc.name}</span>
+        <div className="matched-doc-display glass-file-chip">
+          <div className="matched-doc-name" title={matchedDoc.name}>
+            <FileCheck2 size={15} className="file-chip-icon" />
+            <span className="file-chip-text">{matchedDoc.name}</span>
           </div>
-          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', fontSize: '0.75rem' }}>
-            <span>{formatFileSize(matchedDoc.size)}</span>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: '0.75rem' }}>
+            <span className="file-chip-size">{formatFileSize(matchedDoc.size)}</span>
             {matchedDoc.pageCount !== null && (
-              <span className="file-meta-pill">
+              <span className="file-meta-pill glass-pill">
                 {matchedDoc.pageCount}{' '}
                 {t(lang, 'matching', 'pages')}
               </span>
@@ -261,26 +261,26 @@ export const RequirementCard: React.FC<RequirementCardProps> = ({
 
       {/* Expiry date input if requirement has expiry AND a file is matched */}
       {requirement.has_expiry && matchedDoc && (
-        <div className="expiry-row">
-          <Calendar size={15} color="#475569" />
+        <div className="expiry-row glass-row">
+          <Calendar size={15} className="expiry-icon" />
           <label htmlFor={`expiry-${requirement.id}`} className="expiry-label">
             {t(lang, 'matching', 'expiryDateLabel')}:
           </label>
           <input
             id={`expiry-${requirement.id}`}
             type="date"
-            className="expiry-input"
+            className="expiry-input glass-input"
             value={currentExpiry}
             onChange={(e) => onExpiryChange(requirement.id, e.target.value)}
           />
 
           {currentExpiry ? (
             validation.status === 'expired' ? (
-              <span className="badge badge-expired">
+              <span className="badge-liquid badge-liquid-expired">
                 {t(lang, 'matching', 'expiryInvalid')}
               </span>
             ) : (
-              <span className="badge badge-ok">
+              <span className="badge-liquid badge-liquid-ok">
                 {t(lang, 'matching', 'expiryValid')}
               </span>
             )

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PackageReadiness, Language } from '../types/tender';
 import { t } from '../i18n/translations';
-import { Package, ShieldAlert, CheckCircle2, Download, Loader2 } from 'lucide-react';
+import { Package, ShieldAlert, CheckCircle2, FileCheck2, Loader2, FolderDown, Bookmark, FolderOpen } from 'lucide-react';
 
 interface ReadinessSummaryProps {
   readiness: PackageReadiness;
@@ -135,29 +135,32 @@ export const ReadinessSummary: React.FC<ReadinessSummaryProps> = ({
         <div className="secondary-actions">
           <button
             type="button"
-            className="btn-secondary-sm"
+            className="btn-glass-secondary"
             onClick={onExportChecklist}
             title={t(lang, 'readiness', 'exportChecklist')}
           >
+            <FolderDown size={14} />
             <span>{t(lang, 'readiness', 'exportChecklist')}</span>
           </button>
 
           <button
             type="button"
-            className="btn-secondary-sm"
+            className="btn-glass-secondary"
             onClick={onSaveProject}
             title={t(lang, 'readiness', 'saveProject')}
           >
+            <Bookmark size={14} />
             <span>{t(lang, 'readiness', 'saveProject')}</span>
           </button>
 
           {hasSavedProject && (
             <button
               type="button"
-              className="btn-secondary-sm"
+              className="btn-glass-secondary"
               onClick={onReopenProject}
               title={t(lang, 'readiness', 'reopenProject')}
             >
+              <FolderOpen size={14} />
               <span>{t(lang, 'readiness', 'reopenProject')}</span>
             </button>
           )}
@@ -165,7 +168,7 @@ export const ReadinessSummary: React.FC<ReadinessSummaryProps> = ({
 
         <button
           type="button"
-          className="btn-primary btn-generate-main"
+          className="btn-liquid-generate"
           disabled={!readiness.isReady || isGenerating}
           onClick={onGeneratePackage}
         >
@@ -176,7 +179,7 @@ export const ReadinessSummary: React.FC<ReadinessSummaryProps> = ({
             </>
           ) : (
             <>
-              <Download size={16} />
+              <FileCheck2 size={17} />
               <span>{t(lang, 'readiness', 'generateButton')}</span>
             </>
           )}

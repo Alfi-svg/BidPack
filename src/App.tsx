@@ -14,6 +14,7 @@ import { UploadArea } from './components/UploadArea';
 import { UploadedFileList } from './components/UploadedFileList';
 import { RequirementCard } from './components/RequirementCard';
 import { ReadinessSummary } from './components/ReadinessSummary';
+import { QuickGuide } from './components/QuickGuide';
 import { AlertBanner, AlertType } from './components/AlertBanner';
 import { parseRequirementsJson, calculatePackageReadiness, validateRequirement } from './lib/validation';
 import { calculateFileHash, identifyDuplicates } from './lib/duplicate';
@@ -576,14 +577,14 @@ export const App: React.FC = () => {
         />
       )}
 
-      <div className="workflow-workspace-grid">
-        {/* Left Column: Requirements & Matching */}
+      <div className="workflow-workspace-grid three-col-layout">
+        {/* Left Column: Requirements & Matching (Largest width) */}
         <div className="requirements-column">
-          <div className="card">
+          <div className="card glass-card">
             <div className="card-header">
               <div>
                 <h2>{t(lang, 'matching', 'title')}</h2>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--text-dim)', marginTop: 2 }}>
+                <p className="card-subtitle">
                   {t(lang, 'matching', 'subtitle')}
                 </p>
               </div>
@@ -591,11 +592,11 @@ export const App: React.FC = () => {
               {tender && uploadedFiles.length > 0 && (
                 <button
                   type="button"
-                  className="btn-secondary-sm"
+                  className="btn-glass-secondary"
                   onClick={handleSuggestMatches}
                   title={t(lang, 'matching', 'suggestMatches')}
                 >
-                  <Sparkles size={14} color="var(--primary-navy)" />
+                  <Sparkles size={14} className="sparkle-icon" />
                   <span>{t(lang, 'matching', 'suggestMatches')}</span>
                 </button>
               )}
@@ -605,7 +606,7 @@ export const App: React.FC = () => {
             {Object.keys(suggestions).length > 0 && (
               <div className="global-suggestions-bar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8125rem', fontWeight: 600 }}>
-                  <Sparkles size={14} color="var(--primary-navy)" />
+                  <Sparkles size={14} className="sparkle-icon" />
                   <span>{t(lang, 'matching', 'suggestionsFound', { count: Object.keys(suggestions).length })}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -656,12 +657,12 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Document Upload & File Inventory */}
+        {/* Middle Column: Document Upload & File Inventory (Medium width) */}
         <div className="upload-column">
-          <div className="card">
+          <div className="card glass-card">
             <div className="card-header">
               <h2>
-                <Files size={18} />
+                <Files size={18} className="header-icon-primary" />
                 {t(lang, 'upload', 'title')}
               </h2>
             </div>
@@ -683,6 +684,9 @@ export const App: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Right Column: Quick Guide & Tips (Smaller width) */}
+        <QuickGuide lang={lang} />
       </div>
     </div>
   );
